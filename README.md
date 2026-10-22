@@ -8,7 +8,7 @@
 > Curated from 137K+ GitHub repos · live-verified against the GitHub API · October 2026
 
 [![Awesome](https://awesome.re/badge.svg)](https://awesome.re)
-[![Tools](https://img.shields.io/badge/tools-50%2B%20gamechangers-blue)](#-decision-matrix)
+[![Tools](https://img.shields.io/badge/tools-70%2B%20gamechangers-blue)](#-decision-matrix)
 [![Agent Ready](https://img.shields.io/badge/agent--optimized-✓-brightgreen)](#-agent-query-api)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen)](../../compare)
 [![Last Updated](https://img.shields.io/badge/updated-October%202026-orange)](.)
@@ -56,7 +56,8 @@ Every entry here has a story like that. Let's go.
 | [🧬 Migrations & Schema Governance](#-migrations--schema-governance) | Atlas · pgroll · Bytebase · sqlfluff |
 | [🆕 New-Gen Engines](#-new-gen-engines) | DuckDB · SurrealDB · Turso · Neon · Dolt |
 | [🐘 Postgres Superpowers](#-postgres-superpowers) | Supabase · pgvector · ParadeDB · TimescaleDB |
-| [🔍 Search & Vector](#-search--vector) | ParadeDB · Qdrant · LanceDB · pgvectorscale |
+| [� JSON Superpowers](#-json-superpowers) | JSONB · jq · simdjson · quicktype · DuckDB |
+| [�🔍 Search & Vector](#-search--vector) | ParadeDB · Qdrant · LanceDB · pgvectorscale |
 | [⚡ Cache & Query Acceleration](#-cache--query-acceleration) | Dragonfly · Valkey · ReadySet |
 | [🔄 Replication, CDC & Sync](#-replication-cdc--local-first-sync) | Litestream · Electric · Sequin · PeerDB |
 | [🔗 Poolers & Proxies](#-poolers--proxies) | Supavisor · Odyssey · PgCat |
@@ -126,6 +127,28 @@ Teams kept paying for Spark/BigQuery clusters to transform data that fits in RAM
 - After: branch your prod data, run the risky ETL on the branch, merge if it works, discard if it doesn't
 
 > This changes how you test migrations, audit changes, and collaborate on datasets — the way Git changed code.
+
+### 7. The document database you deleted
+
+Teams reach for MongoDB because "our data is JSON". Then they run two systems forever — one for documents, one for relations.
+
+- Before: MongoDB for docs + Postgres for the real data + a sync job between them
+- After: **`jsonb` columns in Postgres** — `@>` containment queries on a `jsonb_path_ops` GIN index are index-fast, and the document sits **in the same transaction** as your relational rows
+- Change: `CREATE INDEX ON t USING gin (doc jsonb_path_ops);` — your document DB is a column type
+
+> If you genuinely need the Mongo wire protocol, [FerretDB] proxies it onto Postgres/SQLite anyway. JSONB + the [JSON Superpowers](#-json-superpowers) methods below cover the "document store" requirement for most apps — with joins, ACID, and one backup story.
+
+### 8. The JSONL lake that was already a database
+
+Before: thousands of `.jsonl` files in a bucket → ETL job → load → query (hours later).
+After: **[DuckDB] reads them directly** — schema inferred, filters pushed down:
+
+```sql
+SELECT event, count(*) FROM read_json_auto('s3://logs/2026/*.jsonl')
+WHERE ts > '2026-10-01' GROUP BY event ORDER BY 2 DESC;
+```
+
+Joins the JSONL files **with your live Postgres** in the same query. The "data lake" required zero pipeline.
 
 ---
 
@@ -199,7 +222,79 @@ Postgres stopped being "the boring default" and became the extensible platform e
 
 ---
 
-## 🔍 Search & Vector
+## � JSON Superpowers
+
+Quick pick: **JSONB** for documents-in-PG · **[jq]** the CLI standard · **[simdjson]** for the hot path · **[quicktype]** JSON→types · **[DuckDB]** `read_json_auto` for JSONL lakes.
+
+JSON is the common denominator of this whole list — and 2026's answer to "it's just JSON" is: **don't move it into a special system; query it where it lives.** Three layers: methods *in* the DB, tools *around* the DB, and engines that make JSON itself fast.
+
+### JSON methods inside your database
+
+```sql
+-- Postgres JSONB: the document DB you already own
+CREATE INDEX ON orders USING gin (payload jsonb_path_ops);      -- fast @> lookups
+SELECT * FROM orders WHERE payload @> '{"status":"shipped"}';   -- containment, index-hit
+SELECT jsonb_path_query(payload, '$.items[*].price ? (@ > 100)') FROM orders;  -- JSONPath
+UPDATE orders SET payload = jsonb_set(payload,'{eta}','"2026-11-01"');         -- surgical edit
+
+-- SQLite: JSON1 is built in — docs without a document DB
+SELECT json_extract(profile, '$.address.city') FROM users;
+SELECT * FROM t, json_each(t.tags);                              -- array → rows
+
+-- DuckDB: JSON files are tables. Globs, schema inference, pushdown.
+SELECT * FROM read_json_auto('events/**/*.jsonl');
+COPY (SELECT * FROM read_json_auto('in.json')) TO 'out.parquet'; -- JSONL → Parquet in 1 line
+
+-- MySQL 8: SQL/JSON standard
+SELECT * FROM t, JSON_TABLE(t.doc, '$.items[*]' COLUMNS (sku TEXT PATH '$.sku')) jt;
+```
+
+| Method | Kills | The unlock |
+|--------|-------|-----------|
+| `jsonb` + `jsonb_path_ops` GIN | MongoDB for most apps | documents in the same ACID domain as rows |
+| `@>` containment / `jsonb_path_*` | secondary "document index" | JSONPath queries against an index, not a scan |
+| `jsonb_set` / generated columns | ETL "extract key fields" jobs | surgical updates + indexed computed columns |
+| SQLite `json_extract`/`json_each` | "we need a real DB for JSON" | JSON in a file, queryable, zero infra |
+| DuckDB `read_json_auto` | the JSONL ETL pipeline | lakes of JSONL queried in place (AHA #8) |
+| `JSON_TABLE` | document columns you can't join | JSON arrays → relational rows, standard SQL |
+
+### The JSON CLI toolkit
+
+- **[jq]** — the standard: `jq '.items[] | select(.price>100)'`. 36k★, everywhere, scriptable. *Runner-up:* **[gojq]** — pure-Go jq you can embed in your Go app (no C dep).
+- **[jnv]** — interactive jq: type the filter, watch results live. The fastest way to *discover* the right query. Pair with **[jless]** (pure viewer) or **[fx]** (viewer + JS processing).
+- **[gron]** — `gron big.json | grep user | gron -u` — flattens JSON into greppable lines; makes `grep`/`diff`/`sed` work on JSON.
+- **[dasel]** / **[yq]** — one syntax across JSON/YAML/TOML/XML/CSV. Pick when your world isn't JSON-only.
+- **[miller]** (`mlr`) — awk/sed/cut/join/sort for JSON/CSV records; the Swiss-army pipeline tool.
+- **[qsv]** — ultra-fast data-wrangling CLI (CSV/JSON): joins, sampling, frequency tables, stats — in milliseconds on millions of rows.
+- **[jc]** — converts *any* CLI output to JSON: `ls -la | jc --ls | jq` — turns the whole Unix toolbox into structured data.
+- **[jmespath]** — the query language your `aws`/`az`/`gh` CLIs already speak (`--query` flags); worth knowing before you reach for jq on cloud output.
+
+### GB/s parsers — the "super fast" layer
+
+- **[simdjson]** — parses JSON at **multiple GB/s** using SIMD. The engine inside Node.js, ClickHouse, Meta Velox, Milvus — the reason "JSON is slow" stopped being true in hot paths.
+- **[sonic]** (ByteDance) — fastest JSON in Go via JIT-generated parse code. The 2026 pick over `encoding/json`.
+- **[goccy/go-json]** — fast drop-in `encoding/json` replacement without sonic's platform constraints.
+- *[json-iterator/go] — the previous-gen speed answer; last push 2024-05 — new code → sonic or goccy.*
+- **[gojq]** — embeddable jq-in-Go for when the hot path is filtering, not just parsing.
+
+### Schema → Types → Validation
+
+- **[quicktype]** — paste JSON, get typed models + (de)serializers in ~25 languages. JSON → compile-time guarantees in seconds.
+- **[ajv]** — the fastest JSON Schema validator (JS/TS); compiles schemas to code. The API-boundary validator.
+- **[jsonschema]** — reference Python implementation.
+- **[check-jsonschema]** — validate JSON/YAML files against schemas **in CI/pre-commit** (built-in schemas for GitHub Actions, Renovate, …).
+
+### Diff, Patch & Merge
+
+- **[jd]** — JSON diff/patch CLI: `jd a.json b.json` → structural diff; emits RFC-style patches. "git diff for data".
+- **[jsondiffpatch]** — JS: visual diffs + compact delta format for object trees.
+- **[evanphx/json-patch]** — Go lib for **RFC 6902** JSON Patch / **RFC 7386** Merge Patch — the standard behind Kubernetes' PATCH semantics.
+
+*When NOT to use this layer:* if a JSON blob is just config, `jq` + `check-jsonschema` is the whole stack — don't build a pipeline for a file you own. The parser/DB tricks pay off at volume (JSONL lakes, doc-heavy schemas, hot paths) or when JSON crosses system boundaries.
+
+---
+
+## �🔍 Search & Vector
 
 Quick pick: **[ParadeDB]** if Postgres · **[Qdrant]** standalone · **[LanceDB]** embedded/AI pipelines.
 
@@ -345,6 +440,17 @@ Quick pick: **[Supabase]** Postgres-platform · **[PocketBase]** single-binary �
 | Type-safe SQL → code | [sqlc] | [kysely] (query-builder) |
 | Real DB in unit tests | [Testcontainers] | [pgcopydb] (data too) |
 | Query cloud APIs as SQL | [Steampipe] | — |
+| Document store without Mongo | Postgres `jsonb` | [FerretDB] (wire-compat) |
+| Query JSONL files as SQL | [DuckDB] `read_json_auto` | [qsv] |
+| Filter/transform JSON in scripts | [jq] | [gojq] (embeddable) |
+| Explore a JSON blob interactively | [jnv] · [jless] | [fx] |
+| grep/diff JSON as lines | [gron] | [jd] (structural diff) |
+| Any CLI output → JSON | [jc] | — |
+| awk/sed for JSON+CSV records | [miller] | [qsv] |
+| Parse JSON at GB/s | [simdjson] | [sonic] (Go) · [goccy/go-json] |
+| JSON → typed code (25 langs) | [quicktype] | — |
+| Validate JSON in CI | [check-jsonschema] | [ajv] (runtime) · [jsonschema] (Py) |
+| Diff/patch JSON documents | [jd] | [jsondiffpatch] · [evanphx/json-patch] |
 | Chat with my database | [WrenAI] | [DB-GPT] · [Vanna] |
 | BI that lives in Git | [Evidence] | [Lightdash] |
 | Backend in one binary | [PocketBase] | [Supabase] |
@@ -369,6 +475,7 @@ If you're starting a serious project today, the evidence-backed default:
 - **Tests:** [Testcontainers] + [pgcopydb] for realistic copies
 - **BI:** [Evidence] (code-first) or [Metabase] (team-first)
 - **Data versioning:** [Dolt] when data itself is the artifact
+- **JSON pipeline:** `jsonb` columns for docs · [DuckDB] `read_json_auto` on JSONL lakes · [jq]+[jnv] to explore · [quicktype] → typed code · [check-jsonschema] in CI · [simdjson]/[sonic] in the hot path
 
 ---
 
@@ -513,3 +620,26 @@ Built with: 137K repos indexed · live GitHub API verification · [SurrealDB](ht
 [Directus]: https://github.com/directus/directus
 [Nhost]: https://github.com/nhost/nhost
 [kysely]: https://github.com/kysely-org/kysely
+[jq]: https://github.com/jqlang/jq
+[gojq]: https://github.com/itchyny/gojq
+[jnv]: https://github.com/ynqa/jnv
+[jless]: https://github.com/PaulJuliusMartinez/jless
+[fx]: https://github.com/antonmedv/fx
+[gron]: https://github.com/tomnomnom/gron
+[dasel]: https://github.com/TomWright/dasel
+[yq]: https://github.com/mikefarah/yq
+[miller]: https://github.com/johnkerl/miller
+[qsv]: https://github.com/dathere/qsv
+[jc]: https://github.com/kellyjonbrazil/jc
+[jmespath]: https://github.com/jmespath/jmespath.py
+[simdjson]: https://github.com/simdjson/simdjson
+[sonic]: https://github.com/bytedance/sonic
+[goccy/go-json]: https://github.com/goccy/go-json
+[json-iterator/go]: https://github.com/json-iterator/go
+[quicktype]: https://github.com/glideapps/quicktype
+[ajv]: https://github.com/ajv-validator/ajv
+[jsonschema]: https://github.com/python-jsonschema/jsonschema
+[check-jsonschema]: https://github.com/python-jsonschema/check-jsonschema
+[jd]: https://github.com/josephburnett/jd
+[jsondiffpatch]: https://github.com/benjamine/jsondiffpatch
+[evanphx/json-patch]: https://github.com/evanphx/json-patch
