@@ -10,3 +10,4 @@
 - Decision matrix + 2026 recommended stack + Agent Query API
 - Deterministic premium social-preview assets (SVG + PNG 1280×640, hero 1600×800)
 - `docs/assets/IMAGE-PROMPT-CHATGPT.md` — prompt to upgrade the hero art
+- Premium hero art: GPT Image 2.5 via Higgsfield CLI (2688×1152 → social-preview + hero); SVG kept as fallback
