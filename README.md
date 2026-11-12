@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="docs/assets/catalog-cover.png" alt="Awesome Database Tools — drop legacy stacks" width="100%">
+  <img src="docs/assets/catalog-cover.png" alt="Awesome Database Tools" width="100%">
 </p>
 
 # 🗄️ Awesome Database Tools 2026
