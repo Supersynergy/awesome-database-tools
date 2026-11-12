@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="docs/assets/catalog-cover.png" alt="Awesome Database Tools" width="100%">
+  <img src="docs/assets/catalog-cover.png" alt="Awesome Database Tools" width="300" align="right">
 </p>
 
 # 🗄️ Awesome Database Tools 2026
@@ -10,7 +10,7 @@
 [![Awesome](https://awesome.re/badge.svg)](https://awesome.re)
 [![Tools](https://img.shields.io/badge/tools-70%2B%20gamechangers-blue)](#-decision-matrix)
 [![Agent Ready](https://img.shields.io/badge/agent--optimized-✓-brightgreen)](#-agent-query-api)
-[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen)](../../compare)
+[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen)](https://github.com/Supersynergy/awesome-database-tools/compare)
 [![Last Updated](https://img.shields.io/badge/updated-October%202026-orange)](.)
 
 **🧭 Explore:** [Contents](#contents) · [SQL clients](#-sql-clients--ides) · [Search & vector](#-search--vector) · [Decision matrix](#-decision-matrix) · [Agent query API](#-agent-query-api)
@@ -738,7 +738,7 @@ PR criteria — all four required:
 3. **Clear replacement target** (what legacy tool does it beat, and why)
 4. **Honest "When NOT to use"** — this is what separates useful lists from hype lists
 
-[Open a PR](../../compare) · [Suggest a tool via Issue](../../issues/new/choose)
+[Open a PR](https://github.com/Supersynergy/awesome-database-tools/compare) · [Suggest a tool via Issue](../../issues/new/choose)
 
 ---
 
