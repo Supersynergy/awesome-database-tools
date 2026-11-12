@@ -34,18 +34,46 @@ Every entry here has a story like that. Let's go.
 
 ## ⚡ TL;DR — Top 10 Drops Right Now
 
-| Drop this | Use this instead | Real gain |
-|-----------|-----------------|-----------|
-| `pgAdmin` / `phpMyAdmin` | [DbGate] · [Harlequin] | modern UI · TUI built for AI agents (`hsql`) |
-| `Redis` (single-purpose) | [Dragonfly] | ~25× throughput · drop-in protocol · one node replaces a cluster |
-| `pg_dump` cron backups | [Litestream] | streaming replication to S3 · point-in-time restore · seconds of data loss |
-| Hand-edited `migration.sql` | [Atlas] or [pgroll] | declarative schema-as-code · **zero-downtime** expand/contract |
-| `Mongo + Postgres + Redis` | [SurrealDB] | one binary: doc + graph + SQL + vector + live queries |
-| `Elasticsearch` (app search) | [ParadeDB] | BM25 + vectors *inside* Postgres — delete a whole system |
-| `Pinecone` | [pgvector] + [pgvectorscale] · [Qdrant] · [LanceDB] | vector index inside/next to your DB · no second system of record |
-| `BigQuery`/`Spark` (&lt;1TB) | [DuckDB] | in-process OLAP · zero infra · joins Parquet/CSV/Postgres in one query |
-| `Debezium + Kafka` (simple sync) | [Electric] · [Sequin] · [PeerDB] | Postgres CDC → streams/clients without the Kafka tax |
-| "SQLite can't replicate" | [Turso] · [Litestream] | libSQL fork · edge replicas · embedded replicas in-app |
+- **`pgAdmin` / `phpMyAdmin`**<br>
+  Use this instead: [DbGate] · [Harlequin]<br>
+  Real gain: modern UI · TUI built for AI agents (`hsql`)
+
+- **`Redis` (single-purpose)**<br>
+  Use this instead: [Dragonfly]<br>
+  Real gain: ~25× throughput · drop-in protocol · one node replaces a cluster
+
+- **`pg_dump` cron backups**<br>
+  Use this instead: [Litestream]<br>
+  Real gain: streaming replication to S3 · point-in-time restore · seconds of data loss
+
+- **Hand-edited `migration.sql`**<br>
+  Use this instead: [Atlas] or [pgroll]<br>
+  Real gain: declarative schema-as-code · **zero-downtime** expand/contract
+
+- **`Mongo + Postgres + Redis`**<br>
+  Use this instead: [SurrealDB]<br>
+  Real gain: one binary: doc + graph + SQL + vector + live queries
+
+- **`Elasticsearch` (app search)**<br>
+  Use this instead: [ParadeDB]<br>
+  Real gain: BM25 + vectors *inside* Postgres — delete a whole system
+
+- **`Pinecone`**<br>
+  Use this instead: [pgvector] + [pgvectorscale] · [Qdrant] · [LanceDB]<br>
+  Real gain: vector index inside/next to your DB · no second system of record
+
+- **`BigQuery`/`Spark` (&lt;1TB)**<br>
+  Use this instead: [DuckDB]<br>
+  Real gain: in-process OLAP · zero infra · joins Parquet/CSV/Postgres in one query
+
+- **`Debezium + Kafka` (simple sync)**<br>
+  Use this instead: [Electric] · [Sequin] · [PeerDB]<br>
+  Real gain: Postgres CDC → streams/clients without the Kafka tax
+
+- **"SQLite can't replicate"**<br>
+  Use this instead: [Turso] · [Litestream]<br>
+  Real gain: libSQL fork · edge replicas · embedded replicas in-app
+
 
 ---
 
@@ -158,12 +186,22 @@ Joins the JSONL files **with your live Postgres** in the same query. The "data l
 
 Quick pick: **[DbGate]** for the universal GUI, **[Harlequin]** for the terminal + AI-agent workflow.
 
-| Drop this | Use this | Why |
-|-----------|----------|-----|
-| phpMyAdmin | [DbGate] | one app for MySQL/Postgres/Mongo/SQLite/SQL Server · web or desktop |
-| pgAdmin | [Beekeeper Studio] | fast, actually-designed GUI · tabbed · free-tier covers most work |
-| GUI-for-everything | [Harlequin] | SQL IDE in your terminal · `hsql` companion CLI built **for AI agents** |
-| per-engine CLIs | [usql] | one `psql`-style CLI for 50+ databases |
+- **phpMyAdmin**<br>
+  Use this: [DbGate]<br>
+  Why: one app for MySQL/Postgres/Mongo/SQLite/SQL Server · web or desktop
+
+- **pgAdmin**<br>
+  Use this: [Beekeeper Studio]<br>
+  Why: fast, actually-designed GUI · tabbed · free-tier covers most work
+
+- **GUI-for-everything**<br>
+  Use this: [Harlequin]<br>
+  Why: SQL IDE in your terminal · `hsql` companion CLI built **for AI agents**
+
+- **per-engine CLIs**<br>
+  Use this: [usql]<br>
+  Why: one `psql`-style CLI for 50+ databases
+
 
 - **[DbGate]** — the modern phpMyAdmin: one install, every engine, runs in browser or as desktop app. *When NOT to use:* you need DB-specific deep tooling (use engine-native tools alongside).
 - **[Harlequin]** — DuckDB/Postgres/MySQL/SQLite in a TUI that doesn't feel like 1998. Its [`hsql`](https://harlequin.sh) shell is designed so AI agents can query your DB cleanly — if your agent touches databases, this is the interface to standardize on.
@@ -190,15 +228,34 @@ Quick pick: **[Atlas]** for declarative, **[pgroll]** for zero-downtime Postgres
 
 Quick pick: **[DuckDB]** analytics · **[SurrealDB]** multi-model · **[Turso]** edge SQLite · **[Neon]** serverless Postgres.
 
-| Engine | One-liner | The gamechanger |
-|--------|-----------|-----------------|
-| [DuckDB] | in-process OLAP | analytics with zero infra · joins files+DBs in one query |
-| [SurrealDB] | multi-model in one binary | doc + graph + SQL + vector + live queries — replaces 3 systems |
-| [Turso] | libSQL (SQLite rewritten in Rust) | edge replicas · embedded replicas · SQLite that scales out |
-| [Neon] | serverless Postgres | storage/compute split · branch your DB like Git · scale-to-zero |
-| [Gel] (EdgeDB) | Postgres + modern data model | graph queries, strong types, auth built-in on top of PG |
-| [Dolt] | Git for data | branch/merge/diff/version **data** itself |
-| [PocketBase] | backend in 1 file | SQLite + auth + realtime + admin UI in a single binary |
+- **[DuckDB]**<br>
+  One-liner: in-process OLAP<br>
+  The gamechanger: analytics with zero infra · joins files+DBs in one query
+
+- **[SurrealDB]**<br>
+  One-liner: multi-model in one binary<br>
+  The gamechanger: doc + graph + SQL + vector + live queries — replaces 3 systems
+
+- **[Turso]**<br>
+  One-liner: libSQL (SQLite rewritten in Rust)<br>
+  The gamechanger: edge replicas · embedded replicas · SQLite that scales out
+
+- **[Neon]**<br>
+  One-liner: serverless Postgres<br>
+  The gamechanger: storage/compute split · branch your DB like Git · scale-to-zero
+
+- **[Gel] (EdgeDB)**<br>
+  One-liner: Postgres + modern data model<br>
+  The gamechanger: graph queries, strong types, auth built-in on top of PG
+
+- **[Dolt]**<br>
+  One-liner: Git for data<br>
+  The gamechanger: branch/merge/diff/version **data** itself
+
+- **[PocketBase]**<br>
+  One-liner: backend in 1 file<br>
+  The gamechanger: SQLite + auth + realtime + admin UI in a single binary
+
 
 - **[SurrealDB]** — when your app needs documents + relations + vectors + live updates, running Postgres+Mongo+Redis+search is four failure domains. SurrealDB is one binary. *When NOT to use:* you need the deepest Postgres extension ecosystem (then stay on PG + extensions).
 - **[Turso]** — SQLite-compatible, Rust rewrite, speaks Postgres wire protocol too. Embedded replicas = your app reads SQLite locally while it syncs. For edge/mobile/local-first this is the 2026 answer.
@@ -251,14 +308,30 @@ COPY (SELECT * FROM read_json_auto('in.json')) TO 'out.parquet'; -- JSONL → Pa
 SELECT * FROM t, JSON_TABLE(t.doc, '$.items[*]' COLUMNS (sku TEXT PATH '$.sku')) jt;
 ```
 
-| Method | Kills | The unlock |
-|--------|-------|-----------|
-| `jsonb` + `jsonb_path_ops` GIN | MongoDB for most apps | documents in the same ACID domain as rows |
-| `@>` containment / `jsonb_path_*` | secondary "document index" | JSONPath queries against an index, not a scan |
-| `jsonb_set` / generated columns | ETL "extract key fields" jobs | surgical updates + indexed computed columns |
-| SQLite `json_extract`/`json_each` | "we need a real DB for JSON" | JSON in a file, queryable, zero infra |
-| DuckDB `read_json_auto` | the JSONL ETL pipeline | lakes of JSONL queried in place (AHA #8) |
-| `JSON_TABLE` | document columns you can't join | JSON arrays → relational rows, standard SQL |
+- **`jsonb` + `jsonb_path_ops` GIN**<br>
+  Kills: MongoDB for most apps<br>
+  The unlock: documents in the same ACID domain as rows
+
+- **`@>` containment / `jsonb_path_*`**<br>
+  Kills: secondary "document index"<br>
+  The unlock: JSONPath queries against an index, not a scan
+
+- **`jsonb_set` / generated columns**<br>
+  Kills: ETL "extract key fields" jobs<br>
+  The unlock: surgical updates + indexed computed columns
+
+- **SQLite `json_extract`/`json_each`**<br>
+  Kills: "we need a real DB for JSON"<br>
+  The unlock: JSON in a file, queryable, zero infra
+
+- **DuckDB `read_json_auto`**<br>
+  Kills: the JSONL ETL pipeline<br>
+  The unlock: lakes of JSONL queried in place (AHA #8)
+
+- **`JSON_TABLE`**<br>
+  Kills: document columns you can't join<br>
+  The unlock: JSON arrays → relational rows, standard SQL
+
 
 ### The JSON CLI toolkit
 
@@ -300,13 +373,26 @@ SELECT * FROM t, JSON_TABLE(t.doc, '$.items[*]' COLUMNS (sku TEXT PATH '$.sku'))
 
 Quick pick: **[ParadeDB]** if Postgres · **[Qdrant]** standalone · **[LanceDB]** embedded/AI pipelines.
 
-| Need | Pick | Why |
-|------|------|-----|
-| Search inside Postgres | [ParadeDB] | BM25 + vectors in-extension · deletes Elasticsearch for most apps |
-| Vector inside Postgres | [pgvector] + [pgvectorscale] | ivfflat/HNSW + DiskANN · production-proven at Timescale |
-| Dedicated vector DB | [Qdrant] | Rust, filtered-search fast, self-hostable, sane ops |
-| Embedded / multimodal | [LanceDB] | columnar Lance format · images+metadata+vectors in one file |
-| Graph+vector hybrid | [Weaviate] | vector DB with built-in knowledge-graph layering |
+- **Search inside Postgres**<br>
+  Pick: [ParadeDB]<br>
+  Why: BM25 + vectors in-extension · deletes Elasticsearch for most apps
+
+- **Vector inside Postgres**<br>
+  Pick: [pgvector] + [pgvectorscale]<br>
+  Why: ivfflat/HNSW + DiskANN · production-proven at Timescale
+
+- **Dedicated vector DB**<br>
+  Pick: [Qdrant]<br>
+  Why: Rust, filtered-search fast, self-hostable, sane ops
+
+- **Embedded / multimodal**<br>
+  Pick: [LanceDB]<br>
+  Why: columnar Lance format · images+metadata+vectors in one file
+
+- **Graph+vector hybrid**<br>
+  Pick: [Weaviate]<br>
+  Why: vector DB with built-in knowledge-graph layering
+
 
 *When NOT to use:* if your "vector search" is <100K vectors, a pgvector column in your existing Postgres beats every dedicated service on cost, ops, and consistency. Start there; graduate only when measured.
 
@@ -418,45 +504,154 @@ Quick pick: **[Supabase]** Postgres-platform · **[PocketBase]** single-binary �
 
 ## 🎯 Decision Matrix
 
-| I want to... | Pick | Runner-up |
-|--------------|------|-----------|
-| Run analytics without a cluster | [DuckDB] | [ClickHouse] (bigger data) |
-| Serve a website's SQL client needs | [DbGate] | [Beekeeper Studio] |
-| Let my AI agent query the DB safely | [Harlequin] (`hsql`) | [usql] |
-| Do zero-downtime PG migrations | [pgroll] | [Atlas] |
-| Govern schema changes as a team | [Bytebase] | [Atlas] |
-| Replace Mongo + PG + Redis | [SurrealDB] | [FerretDB] (Mongo-only) |
-| Put SQLite at the edge | [Turso] | [Litestream] |
-| Serverless Postgres w/ branching | [Neon] | [Supabase] |
-| Delete Elasticsearch | [ParadeDB] | [pgvector] (vector-only) |
-| Vector search inside PG | [pgvector] + [pgvectorscale] | [pgai] (RAG-in-SQL) |
-| Dedicated vector DB | [Qdrant] | [LanceDB] (embedded) |
-| Drop-in Redis speedup | [Dragonfly] | [Valkey] |
-| Cache SQL without code changes | [ReadySet] | materialized views |
-| SQLite prod backups/replication | [Litestream] | [Turso] embedded replicas |
-| Postgres CDC without Kafka | [Electric] | [Sequin] · [PeerDB] |
-| Pool millions of connections | [Supavisor] | [Odyssey] |
-| Enterprise PG backups | [WAL-G] | [pgBackRest] |
-| First look at PG health | [PgHero] | `pg_stat_statements` |
-| Lint SQL in CI | [sqlfluff] | — |
-| Type-safe SQL → code | [sqlc] | [kysely] (query-builder) |
-| Real DB in unit tests | [Testcontainers] | [pgcopydb] (data too) |
-| Query cloud APIs as SQL | [Steampipe] | — |
-| Document store without Mongo | Postgres `jsonb` | [FerretDB] (wire-compat) |
-| Query JSONL files as SQL | [DuckDB] `read_json_auto` | [qsv] |
-| Filter/transform JSON in scripts | [jq] | [gojq] (embeddable) |
-| Explore a JSON blob interactively | [jnv] · [jless] | [fx] |
-| grep/diff JSON as lines | [gron] | [jd] (structural diff) |
-| Any CLI output → JSON | [jc] | — |
-| awk/sed for JSON+CSV records | [miller] | [qsv] |
-| Parse JSON at GB/s | [simdjson] | [sonic] (Go) · [goccy/go-json] |
-| JSON → typed code (25 langs) | [quicktype] | — |
-| Validate JSON in CI | [check-jsonschema] | [ajv] (runtime) · [jsonschema] (Py) |
-| Diff/patch JSON documents | [jd] | [jsondiffpatch] · [evanphx/json-patch] |
-| Chat with my database | [WrenAI] | [DB-GPT] · [Vanna] |
-| BI that lives in Git | [Evidence] | [Lightdash] |
-| Backend in one binary | [PocketBase] | [Supabase] |
-| Version data like code | [Dolt] | — |
+- **Run analytics without a cluster**<br>
+  Pick: [DuckDB]<br>
+  Runner-up: [ClickHouse] (bigger data)
+
+- **Serve a website's SQL client needs**<br>
+  Pick: [DbGate]<br>
+  Runner-up: [Beekeeper Studio]
+
+- **Let my AI agent query the DB safely**<br>
+  Pick: [Harlequin] (`hsql`)<br>
+  Runner-up: [usql]
+
+- **Do zero-downtime PG migrations**<br>
+  Pick: [pgroll]<br>
+  Runner-up: [Atlas]
+
+- **Govern schema changes as a team**<br>
+  Pick: [Bytebase]<br>
+  Runner-up: [Atlas]
+
+- **Replace Mongo + PG + Redis**<br>
+  Pick: [SurrealDB]<br>
+  Runner-up: [FerretDB] (Mongo-only)
+
+- **Put SQLite at the edge**<br>
+  Pick: [Turso]<br>
+  Runner-up: [Litestream]
+
+- **Serverless Postgres w/ branching**<br>
+  Pick: [Neon]<br>
+  Runner-up: [Supabase]
+
+- **Delete Elasticsearch**<br>
+  Pick: [ParadeDB]<br>
+  Runner-up: [pgvector] (vector-only)
+
+- **Vector search inside PG**<br>
+  Pick: [pgvector] + [pgvectorscale]<br>
+  Runner-up: [pgai] (RAG-in-SQL)
+
+- **Dedicated vector DB**<br>
+  Pick: [Qdrant]<br>
+  Runner-up: [LanceDB] (embedded)
+
+- **Drop-in Redis speedup**<br>
+  Pick: [Dragonfly]<br>
+  Runner-up: [Valkey]
+
+- **Cache SQL without code changes**<br>
+  Pick: [ReadySet]<br>
+  Runner-up: materialized views
+
+- **SQLite prod backups/replication**<br>
+  Pick: [Litestream]<br>
+  Runner-up: [Turso] embedded replicas
+
+- **Postgres CDC without Kafka**<br>
+  Pick: [Electric]<br>
+  Runner-up: [Sequin] · [PeerDB]
+
+- **Pool millions of connections**<br>
+  Pick: [Supavisor]<br>
+  Runner-up: [Odyssey]
+
+- **Enterprise PG backups**<br>
+  Pick: [WAL-G]<br>
+  Runner-up: [pgBackRest]
+
+- **First look at PG health**<br>
+  Pick: [PgHero]<br>
+  Runner-up: `pg_stat_statements`
+
+- **Lint SQL in CI**<br>
+  Pick: [sqlfluff]<br>
+  Runner-up: —
+
+- **Type-safe SQL → code**<br>
+  Pick: [sqlc]<br>
+  Runner-up: [kysely] (query-builder)
+
+- **Real DB in unit tests**<br>
+  Pick: [Testcontainers]<br>
+  Runner-up: [pgcopydb] (data too)
+
+- **Query cloud APIs as SQL**<br>
+  Pick: [Steampipe]<br>
+  Runner-up: —
+
+- **Document store without Mongo**<br>
+  Pick: Postgres `jsonb`<br>
+  Runner-up: [FerretDB] (wire-compat)
+
+- **Query JSONL files as SQL**<br>
+  Pick: [DuckDB] `read_json_auto`<br>
+  Runner-up: [qsv]
+
+- **Filter/transform JSON in scripts**<br>
+  Pick: [jq]<br>
+  Runner-up: [gojq] (embeddable)
+
+- **Explore a JSON blob interactively**<br>
+  Pick: [jnv] · [jless]<br>
+  Runner-up: [fx]
+
+- **grep/diff JSON as lines**<br>
+  Pick: [gron]<br>
+  Runner-up: [jd] (structural diff)
+
+- **Any CLI output → JSON**<br>
+  Pick: [jc]<br>
+  Runner-up: —
+
+- **awk/sed for JSON+CSV records**<br>
+  Pick: [miller]<br>
+  Runner-up: [qsv]
+
+- **Parse JSON at GB/s**<br>
+  Pick: [simdjson]<br>
+  Runner-up: [sonic] (Go) · [goccy/go-json]
+
+- **JSON → typed code (25 langs)**<br>
+  Pick: [quicktype]<br>
+  Runner-up: —
+
+- **Validate JSON in CI**<br>
+  Pick: [check-jsonschema]<br>
+  Runner-up: [ajv] (runtime) · [jsonschema] (Py)
+
+- **Diff/patch JSON documents**<br>
+  Pick: [jd]<br>
+  Runner-up: [jsondiffpatch] · [evanphx/json-patch]
+
+- **Chat with my database**<br>
+  Pick: [WrenAI]<br>
+  Runner-up: [DB-GPT] · [Vanna]
+
+- **BI that lives in Git**<br>
+  Pick: [Evidence]<br>
+  Runner-up: [Lightdash]
+
+- **Backend in one binary**<br>
+  Pick: [PocketBase]<br>
+  Runner-up: [Supabase]
+
+- **Version data like code**<br>
+  Pick: [Dolt]<br>
+  Runner-up: —
+
 
 ---
 
