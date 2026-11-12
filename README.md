@@ -1,17 +1,19 @@
 <p align="center">
-  <img src="docs/assets/social-preview.png" alt="Awesome Database Tools — drop legacy stacks" width="100%">
+  <img src="docs/assets/catalog-cover.png" alt="Awesome Database Tools — drop legacy stacks" width="100%">
 </p>
 
 # 🗄️ Awesome Database Tools 2026
 
 > **Drop legacy stacks. Benchmarks, not vibes.**
-> Curated from 137K+ GitHub repos · live-verified against the GitHub API · October 2026
+> Curated from a GitHub API snapshot of 137K+ repositories · October 2026
 
 [![Awesome](https://awesome.re/badge.svg)](https://awesome.re)
 [![Tools](https://img.shields.io/badge/tools-70%2B%20gamechangers-blue)](#-decision-matrix)
 [![Agent Ready](https://img.shields.io/badge/agent--optimized-✓-brightgreen)](#-agent-query-api)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen)](../../compare)
 [![Last Updated](https://img.shields.io/badge/updated-October%202026-orange)](.)
+
+**🧭 Explore:** [Contents](#contents) · [SQL clients](#-sql-clients--ides) · [Search & vector](#-search--vector) · [Decision matrix](#-decision-matrix) · [Agent query API](#-agent-query-api)
 
 ---
 
@@ -56,8 +58,8 @@ Every entry here has a story like that. Let's go.
 | [🧬 Migrations & Schema Governance](#-migrations--schema-governance) | Atlas · pgroll · Bytebase · sqlfluff |
 | [🆕 New-Gen Engines](#-new-gen-engines) | DuckDB · SurrealDB · Turso · Neon · Dolt |
 | [🐘 Postgres Superpowers](#-postgres-superpowers) | Supabase · pgvector · ParadeDB · TimescaleDB |
-| [� JSON Superpowers](#-json-superpowers) | JSONB · jq · simdjson · quicktype · DuckDB |
-| [�🔍 Search & Vector](#-search--vector) | ParadeDB · Qdrant · LanceDB · pgvectorscale |
+| [🧩 JSON Superpowers](#-json-superpowers) | JSONB · jq · simdjson · quicktype · DuckDB |
+| [🔍 Search & Vector](#-search--vector) | ParadeDB · Qdrant · LanceDB · pgvectorscale |
 | [⚡ Cache & Query Acceleration](#-cache--query-acceleration) | Dragonfly · Valkey · ReadySet |
 | [🔄 Replication, CDC & Sync](#-replication-cdc--local-first-sync) | Litestream · Electric · Sequin · PeerDB |
 | [🔗 Poolers & Proxies](#-poolers--proxies) | Supavisor · Odyssey · PgCat |
@@ -222,7 +224,7 @@ Postgres stopped being "the boring default" and became the extensible platform e
 
 ---
 
-## � JSON Superpowers
+## 🧩 JSON Superpowers
 
 Quick pick: **JSONB** for documents-in-PG · **[jq]** the CLI standard · **[simdjson]** for the hot path · **[quicktype]** JSON→types · **[DuckDB]** `read_json_auto` for JSONL lakes.
 
@@ -294,7 +296,7 @@ SELECT * FROM t, JSON_TABLE(t.doc, '$.items[*]' COLUMNS (sku TEXT PATH '$.sku'))
 
 ---
 
-## �🔍 Search & Vector
+## 🔍 Search & Vector
 
 Quick pick: **[ParadeDB]** if Postgres · **[Qdrant]** standalone · **[LanceDB]** embedded/AI pipelines.
 
