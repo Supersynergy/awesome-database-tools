@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="docs/assets/catalog-cover.png" alt="Awesome Database Tools" width="300" align="right">
+  <img src="docs/assets/catalog-cover.png" alt="Awesome Database Tools" width="960">
 </p>
 
 # 🗄️ Awesome Database Tools 2026
